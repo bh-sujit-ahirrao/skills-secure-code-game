@@ -132,17 +132,19 @@ class DB_CRUD_ops(object):
             db_con = con.create_connection(db_path)
             cur = db_con.cursor()
 
-            res = "[METHOD EXECUTED] get_stock_price\n"
             query = "SELECT price FROM stocks WHERE symbol = '" + stock_symbol + "'"
+            res = "[METHOD EXECUTED] get_stock_price\n"
             res += "[QUERY] " + query + "\n"
             if ';' in query:
+                query = "SELECT price FROM stocks WHERE symbol = (?)"
                 res += "[SCRIPT EXECUTION]\n"
-                cur.executescript(query)
+                # cur.executescript(query)
+                cur.execute(query, (stock_symbol,))
             else:
                 cur.execute(query)
-                query_outcome = cur.fetchall()
-                for result in query_outcome:
-                    res += "[RESULT] " + str(result) + "\n"
+            query_outcome = cur.fetchall()
+            for result in query_outcome:
+                res += "[RESULT] " + str(result) + "\n"
             return res
 
         except sqlite3.Error as e:
